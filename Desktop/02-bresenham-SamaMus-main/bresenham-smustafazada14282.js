@@ -6,23 +6,20 @@
 */
 
 
-var canvas; //hold the canvas element
-
-var context; //holds the 2d drawing context
-
-
-//call init fuction when the window loads
+var canvas;
+var context;
 window.onload = init;
 
 var GRID_SIZE = 30; //size of each cells 
 var GRID_COLOR = 'grey';
 var LINE_COLOR = 'red';
 
+//coordinates of the line to draw
 
 var lineX0, lineY0;
 var lineX1, lineY1;
 
-
+//remember if you are to draw a line or mark the start point
 var startNewLine = false;
 
 
@@ -35,16 +32,15 @@ context = canvas.getContext("2d");
 
 if (context) {
     drawGrid(); //empty
-    canvas.onclick = onClick; //event listener for the canvas
 
+    //set a listener for the mousdown event
+    canvas.onclick = onClick;
 }
 }
 
 function onClick (e) {
     startNewLine = !startNewLine;
- 
-    //we will get canvas boundaries to calculate coordinates
-
+    //get coordinates of the mouse click within the canvas
     rect = canvas.getBoundingClientRect();
     x = e.clientX - rect.left;
     y = e.clientY - rect.top;
@@ -54,24 +50,21 @@ function onClick (e) {
     y = Math.floor(y / GRID_SIZE);
 
     if (startNewLine) {
+        //draw the first pixel 
         lineX0 = x;
-        lineY0 = y; //starting x and y coordinates
-
-        drawPixel(lineX0, lineY0);//draw line starting pixel
-
+        lineY0 = y;
+        drawPixel(lineX0, lineY0);
     }
         else {
+            //draw the line to the second pixel
             lineX1 = x;
-            lineY1 = y; //ending coordinates
-
+            lineY1 = y;
             drawBresenham();
         }
 }
 
 function drawPixel(x, y){
     context.fillStyle = LINE_COLOR;
-    
-    //scaling x and y coordinate to canvas size
     x = x * GRID_SIZE;
     y = y * GRID_SIZE;
     context.fillRect(x, y, GRID_SIZE, GRID_SIZE);
@@ -90,7 +83,7 @@ function drawBresenham(){
         x = x + 1;
         d = d - 2*dy;
 
-    //we check if we need to move to next line 
+        //check if we need to move to the next line
         if (d<0) {
             y = y + 1;
             d = d + 2*dx;
@@ -100,7 +93,7 @@ function drawBresenham(){
 }
 
 function drawLine(x0, y0, x1, y1) {
-    context.beginPath();//start new path for drawing
+    context.beginPath();
     context.moveTo(x0, y0);
     context.lineTo(x1, y1);
     context.stroke();
@@ -110,17 +103,15 @@ function drawGrid() {
 
     //Set the line styles 
     context.strokeStyle = GRID_COLOR;
-    context.lineWidth = 1;//width of the grid lines
+    context.lineWidth = 1;
 
 
-
-    //now we will draw vertical lines for the grid
+//Here we draw the vertical lines
 
 x = 0;
 while (x <= canvas.clientWidth) {
 
-    drawLine(x, 0, x, canvas.clientHeight);//draw each vertical line
-
+    drawLine(x, 0, x, canvas.clientHeight);
 
     x = x + GRID_SIZE;
 }
@@ -132,8 +123,7 @@ y = 0;
 while(y <= canvas.clientHeight) {
     drawLine(0, y, canvas.clientWidth, y);
 
-    y = y + GRID_SIZE;  //draw each horizontal line
-
+    y = y + GRID_SIZE;
 }
 
 }
